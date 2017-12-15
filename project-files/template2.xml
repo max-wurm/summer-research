@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><beast beautitemplate='Standard' beautistatus='' namespace="beast.core:beast.evolution.alignment:beast.evolution.tree.coalescent:beast.core.util:beast.evolution.nuc:beast.evolution.operators:beast.evolution.sitemodel:beast.evolution.substitutionmodel:beast.evolution.likelihood" required="" version="2.4">
+
+
+    <!-- replace this with your filename: [templateID] -->
+    <!-- the data should be below this line -->
+    DATAGOESHERE
+
+
+    
+
+
+
+    
+
+
+    
+<map name="Uniform" >beast.math.distributions.Uniform</map>
+<map name="Exponential" >beast.math.distributions.Exponential</map>
+<map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
+<map name="Normal" >beast.math.distributions.Normal</map>
+<map name="Beta" >beast.math.distributions.Beta</map>
+<map name="Gamma" >beast.math.distributions.Gamma</map>
+<map name="LaplaceDistribution" >beast.math.distributions.LaplaceDistribution</map>
+<map name="prior" >beast.math.distributions.Prior</map>
+<map name="InverseGamma" >beast.math.distributions.InverseGamma</map>
+<map name="OneOnX" >beast.math.distributions.OneOnX</map>
+
+
+<run id="mcmc" spec="MCMC" chainLength="1000000">
+    <state id="state" storeEvery="5000">
+        <tree id="Tree.t:templateID" name="stateNode">
+            <taxonset id="TaxonSet.templateID" spec="TaxonSet">
+                <alignment idref="templateID"/>
+            </taxonset>
+        </tree>
+        <parameter id="bPopSizes.t:templateID" dimension="3" lower="0.0" name="stateNode" upper="380000.0">380.0</parameter>
+        <stateNode id="bGroupSizes.t:templateID" spec="parameter.IntegerParameter" dimension="3">1</stateNode>
+    </state>
+
+    <init id="RandomTree.t:templateID" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:templateID" taxa="@templateID">
+        <populationModel id="ConstantPopulation0.t:templateID" spec="ConstantPopulation">
+            <parameter id="randomPopSize.t:templateID" name="popSize">1.0</parameter>
+        </populationModel>
+    </init>
+
+    <distribution id="posterior" spec="util.CompoundDistribution">
+        <distribution id="prior" spec="util.CompoundDistribution">
+            <distribution id="BayesianSkyline.t:templateID" spec="BayesianSkyline" groupSizes="@bGroupSizes.t:templateID" popSizes="@bPopSizes.t:templateID">
+                <treeIntervals id="BSPTreeIntervals.t:templateID" spec="TreeIntervals" tree="@Tree.t:templateID"/>
+            </distribution>
+            <distribution id="MarkovChainedPopSizes.t:templateID" spec="beast.math.distributions.MarkovChainDistribution" jeffreys="true" parameter="@bPopSizes.t:templateID"/>
+            <distribution id="Sample_1.prior" spec="beast.math.distributions.MRCAPrior" monophyletic="true" tree="@Tree.t:templateID">
+                <taxonset id="Sample_1" spec="TaxonSet">
+                    <taxon id="sequence1" spec="Taxon"/>
+                </taxonset>
+            </distribution>
+        </distribution>
+        <distribution id="likelihood" spec="util.CompoundDistribution" useThreads="true">
+            <distribution id="treeLikelihood.templateID" spec="ThreadedTreeLikelihood" data="@templateID" tree="@Tree.t:templateID">
+                <siteModel id="SiteModel.s:templateID" spec="SiteModel">
+                    <parameter id="mutationRate.s:templateID" estimate="false" name="mutationRate">1.0</parameter>
+                    <parameter id="gammaShape.s:templateID" estimate="false" name="shape">1.0</parameter>
+                    <parameter id="proportionInvariant.s:templateID" estimate="false" lower="0.0" name="proportionInvariant" upper="1.0">0.0</parameter>
+                    <substModel id="JC69.s:templateID" spec="JukesCantor"/>
+                </siteModel>
+                <branchRateModel id="StrictClock.c:templateID" spec="beast.evolution.branchratemodel.StrictClockModel">
+                    <parameter id="clockRate.c:templateID" estimate="false" name="clock.rate">7.9E-4</parameter>
+                </branchRateModel>
+            </distribution>
+        </distribution>
+    </distribution>
+
+    <operator id="BayesianSkylineTreeScaler.t:templateID" spec="ScaleOperator" scaleFactor="0.5" tree="@Tree.t:templateID" weight="3.0"/>
+
+    <operator id="BayesianSkylineTreeRootScaler.t:templateID" spec="ScaleOperator" rootOnly="true" scaleFactor="0.5" tree="@Tree.t:templateID" weight="3.0"/>
+
+    <operator id="BayesianSkylineUniformOperator.t:templateID" spec="Uniform" tree="@Tree.t:templateID" weight="30.0"/>
+
+    <operator id="BayesianSkylineSubtreeSlide.t:templateID" spec="SubtreeSlide" tree="@Tree.t:templateID" weight="15.0"/>
+
+    <operator id="BayesianSkylineNarrow.t:templateID" spec="Exchange" tree="@Tree.t:templateID" weight="15.0"/>
+
+    <operator id="BayesianSkylineWide.t:templateID" spec="Exchange" isNarrow="false" tree="@Tree.t:templateID" weight="3.0"/>
+
+    <operator id="BayesianSkylineWilsonBalding.t:templateID" spec="WilsonBalding" tree="@Tree.t:templateID" weight="3.0"/>
+
+    <operator id="popSizesScaler.t:templateID" spec="ScaleOperator" parameter="@bPopSizes.t:templateID" scaleFactor="0.75" weight="15.0"/>
+
+    <operator id="groupSizesDelta.t:templateID" spec="DeltaExchangeOperator" integer="true" weight="6.0">
+        <intparameter idref="bGroupSizes.t:templateID"/>
+    </operator>
+
+    <logger id="tracelog" fileName="templateID.log" logEvery="1000" model="@posterior" sanitiseHeaders="true" sort="smart">
+        <log idref="posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+        <log idref="treeLikelihood.templateID"/>
+        <log id="TreeHeight.t:templateID" spec="beast.evolution.tree.TreeHeightLogger" tree="@Tree.t:templateID"/>
+        <log idref="Sample_1.prior"/>
+        <log idref="BayesianSkyline.t:templateID"/>
+        <log idref="bPopSizes.t:templateID"/>
+        <log idref="bGroupSizes.t:templateID"/>
+    </logger>
+
+    <logger id="screenlog" logEvery="1000">
+        <log idref="posterior"/>
+        <log id="ESS.0" spec="util.ESS" arg="@posterior"/>
+        <log idref="likelihood"/>
+        <log idref="prior"/>
+    </logger>
+
+    <logger id="treelog.t:templateID" fileName="$(tree).trees" logEvery="1000" mode="tree">
+        <log id="TreeWithMetaDataLogger.t:templateID" spec="beast.evolution.tree.TreeWithMetaDataLogger" tree="@Tree.t:templateID"/>
+    </logger>
+
+</run>
+
+</beast>
