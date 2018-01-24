@@ -3,7 +3,7 @@
 Created on Mon Dec 11 10:02:28 2017
 
 Code for copying data into an xml file for BEAST to handle
-Put this file in the directory containing the master run file
+Put this file in the directory containing the master simulation file
 
 @author: Max
 """
@@ -44,14 +44,10 @@ for IDX, FILE in enumerate(filenames):
     for i in range(size):
         NucleoString.append(subset_data[tablocations[i]+1:nlocations[i]])
     
-    # put this data into xml format
-    SequenceID = ["sequence" + str(i) for i in range(1,size+1)]
-    
-    filename = "dummy filename"
-    
     # create the xml tree structure
     xmldata = ET.Element("data", id=filenames[IDX][len(parfolder)+1:-4],
                          name="alignment")
+    SequenceID = ["sequence" + str(i) for i in range(1,size+1)]
     for i in range(size):
         sequence = ET.SubElement(xmldata, "sequence", id="seq_" + SequenceID[i],
                                  taxon=SequenceID[i], totalcount=str(4),
