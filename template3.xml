@@ -9,11 +9,11 @@
     
 
 
-
     
 
 
     
+	
 <map name="Uniform" >beast.math.distributions.Uniform</map>
 <map name="Exponential" >beast.math.distributions.Exponential</map>
 <map name="LogNormal" >beast.math.distributions.LogNormalDistributionModel</map>
@@ -33,8 +33,8 @@
                 <alignment idref="templateID"/>
             </taxonset>
         </tree>
-        <parameter id="bPopSizes.t:templateID" dimension="3" lower="0.0" name="stateNode" upper="380000.0">380.0</parameter>
-        <stateNode id="bGroupSizes.t:templateID" spec="parameter.IntegerParameter" dimension="3">1</stateNode>
+        <parameter id="bPopSizes.t:templateID" dimension="5" lower="0.0" name="stateNode" upper="380000.0">380.0</parameter>
+        <stateNode id="bGroupSizes.t:templateID" spec="parameter.IntegerParameter" dimension="5">1</stateNode>
     </state>
 
     <init id="RandomTree.t:templateID" spec="beast.evolution.tree.RandomTree" estimate="false" initial="@Tree.t:templateID" taxa="@templateID">
