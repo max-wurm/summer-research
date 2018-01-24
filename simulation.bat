@@ -2,7 +2,14 @@
 :: Created by Max Wurm
 :: Last updated 13-12-2017
 :: ----------------------------------------------------------------------------------------------
-:: Description: runs fastsimcoal2 simulations and performs analysis on the resultant DNA sequence data
+:: Description: this code simulates and performs analysis on DNA sequence data
+:: Below is an overview of the pipeline
+	:: fastsimcoal2 -> .arp files
+	:: .arp -> [Python script, template] -> .xml
+	:: .xml -> [BEAST2] -> .log, .trees
+	:: .log -> Tracer (data visualisation)
+	:: .log, .trees -> Tracer (Bayesian Skyline Reconstruction)
+
 :: ----------------------------------------------------------------------------------------------
 
 @echo off
@@ -16,18 +23,18 @@ setlocal ENABLEDELAYEDEXPANSION
 		:: arl_run.ars, arlsumstat64.exe, LaunchArlSumStat.sh, ssdefs.txt
 
 cd %~dp0
-set N=10
+set N=1
 set E=1
 set bin_folder=C:\mybin
-set TemplateName=template2.xml
+set TemplateName=template3.xml
 
 :: flags
-set runtype=tplest
+set runtype=param
 set beastflag=1
 set deletexml=0
 set deletelog=0
 set deletetrees=0
-set opentracer=0
+set opentracer=1
 
 :: decide which kind of simulation to do
 IF %runtype%==param (
@@ -43,22 +50,26 @@ IF %runtype%==tplest (
 )
 
 :ParamMarker
+IF NOT EXIST %param_folder% mkdir %param_folder%
 :: get rid of old simulations
 cd %param_folder%
-for %%f in (*.arp) del %%f
+for %%f in (*.arp) do del %%f
 cd ..
 :: do simulations (parameter file)
 fsc26 -i %param_file% -n %N% -q
 goto PostSimulation
 
+
 :TplEstMarker
 :: get rid of old simulations
+IF NOT EXIST %param_folder% mkdir %param_folder%
 cd %param_folder%
 for %%f in (*.arp) do del %%f
 cd ..
 :: do simulations (tpl/est files)
 fsc26 -t %tpl_file% -n %N% -e %est_file% -E %E% -q
 goto PostSimulation
+
 
 :PostSimulation
 :: decide whether to do BEAST analysis
@@ -85,7 +96,9 @@ move outSumStats.txt .. & cd .. & ren outSumStats.txt "%param_folder%SumStats.tx
 pause
 goto :eof
 
+
 :: ----------------------------------------------------------------------------------------------
+
 
 :BeastMarker
 :: delete old xml files?
@@ -99,9 +112,11 @@ IF %deletexml%==1 (
 	for %%f in (*) do move %%f old_files
 )
 cd ..
-:: run python script to convert .arp files into .xml files (sends parameter folder as input)
+:: run python script to convert .arp files into .xml files 
+:: note: the parameter folder and template filename are sent as input
 echo python "%~dp0data_to_xml.py" %1 %param_folder%
 python "%~dp0data_to_xml.py" %1 %param_folder% %TemplateName%
+
 
 :: Create .log file(s) from .xml using BEAST
 cd log_files
@@ -123,16 +138,15 @@ for %%I in (..\xml_files\*.xml) do (
 	java -jar %bin_folder%\beast.jar %%I
 )
 
-:: open a log file in tracer to view
-echo java -jar %binfolder%\tracer.jar !mylog!
+
+:: open a log file in tracer to view (will do the last one if N > 1)
 for %%f in (*.log) do set mylog=%%f
 IF %opentracer%==1 (
 	java -jar %bin_folder%\tracer.jar !mylog!
 )
 
-
-
-:: convert all .arp files into nexus files via PGDSpider -- UNUSED
+::#####################################################################################################################
+:: UNUSED -- convert all .arp files into nexus files with PGDSpider
 ::for %%I in (*.arp) do (
 	::copy NUL ..\nexus_files\%%~nI.nex
 	::%bin_folder%\PGDSpider2-cli.exe -inputfile %%I -outputfile ..\nexus_files\%%~nI.nex -spid ..\conversion_info.spid
