@@ -4,12 +4,15 @@
 [PARAMETERS]
 //#isInt? #name   #dist.#min  #max 
 //all Ns are in number of haploid individuals
-//FLAGX$ is replaced by a python script, where X is the index (starting from 0) of the parameter in the specification.txt file
-//make sure the names of the parameters are the same in the template_TPL.tpl file
-1  NPOP		unif	5000		10000		output bounded
-0  TEMP	logunif	0.01		0.1		output bounded
+1  NPOP       unif  5000   10000   output bounded
+1  NANC      unif   100   1000     output bounded
+1  TEMP		 logunif   0.01    0.1      output bounded
 
 [RULES]
 
 [COMPLEX PARAMETERS]
-0 GROWTH = -TEMP hide
+0  GROWTH = -TEMP    hide
+0  SIZERATIO  = NANC/NPOP          hide
+0  STUFF         = log(SIZERATIO)      hide
+0  TG   = STUFF/GROWTH               hide
+  
