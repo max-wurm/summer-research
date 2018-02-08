@@ -1,0 +1,17 @@
+// Search ranges and rules file
+// ****************************
+
+[PARAMETERS]
+//#isInt? #name   #dist.#min  #max 
+//all Ns are in number of haploid individuals
+1  NCUR       unif  5000   100000   output bounded
+1  NANC      unif   1000   5000     output bounded
+1  TG		 unif   200    600      output bounded
+
+[RULES]
+
+[COMPLEX PARAMETERS]
+0  SIZERATIO  = NANC/NCUR          hide
+0  TEMP         = log(SIZERATIO)      hide
+0  GROWTH   = TEMP/TG               hide
+  
