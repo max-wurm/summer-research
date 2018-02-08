@@ -20,7 +20,7 @@ for %%I in (constant, exponential, bottleneck) do (
 	cd ..
 	set tpl_file=%%I.tpl
 	set est_file=%%I.est
-	fsc26 -t !tpl_file! -n %N% -e !est_file! -E %E% -q
+	fsc26 -t !tpl_file! -n %N% -e !est_file! -E %E% -q -r 1024
 	for %%J in (arl_run.ars, arlsumstat64.exe, LaunchArlSumStat.sh, ssdefs.txt) do (
 		copy %bin_folder%\%%J %%I
 	)
