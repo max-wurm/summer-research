@@ -1,0 +1,12 @@
+// Search ranges and rules file
+// ****************************
+
+[PARAMETERS]
+//#isInt? #name   #dist.#min  #max 
+//all Ns are in number of haploid individuals
+1  NPOP		unif	5000		10000		output bounded
+
+[RULES]
+
+[COMPLEX PARAMETERS]
+
