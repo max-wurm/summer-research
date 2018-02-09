@@ -1,0 +1,14 @@
+// Search ranges and rules file
+// ****************************
+
+[PARAMETERS]
+//#isInt? #name   #dist.#min  #max 
+//all Ns are in number of haploid individuals
+//FLAGX$ is replaced by a python script, where X is the index (starting from 0) of the parameter in the specification.txt file
+//make sure the names of the parameters are the same in the template_TPL.tpl file
+1  NPOP		unif	5000		10000		output bounded
+
+[RULES]
+
+[COMPLEX PARAMETERS]
+
